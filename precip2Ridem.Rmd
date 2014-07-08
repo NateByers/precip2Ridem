@@ -82,6 +82,37 @@ title(main="Site 1")
 par(op)
 ```
 
+Finally, we add a legend.
+
+```{r, eval=FALSE}
+legend(x = 10, y = 580, # places a legend at the appropriate place 
+       legend = c("Precip","% Sat"), # puts text in the legend 
+       lty=c(1, 0), pch = c(NA, 19), # gives the legend appropriate symbols 
+       col=c("black","red")) # appropriate colors
+
+```
+
+```{r, echo=FALSE}
+b.plot <- barplot(precip$precipitation, 
+                  names.arg = precip$date,
+                  xlab="Date", ylab="Precipitation (in)", 
+                  ylim=c(0,5))
+updateusr(x1 = b.plot[1:2], y1 = c(0, 2), x2 = 1:2, y2 = c(0, 250))
+points(station.1$jday, station.1$sat, ylab = "% Staturation", pch = 19,
+       col = "red", ylim = c(0, 250))
+axis(4)
+op <- par(mar=c(5, 4, 4, 8) + 0.1)
+mtext("% Saturation", side = 4, line=4, cex = par("cex.lab"))
+title(main="Site 1")
+par(op)
+
+legend(x = 10, y = 580, # places a legend at the appropriate place 
+       legend = c("Precip","% Sat"), # puts text in the legend 
+       lty=c(1, 0), pch = c(NA, 19), # gives the legend appropriate symbols
+       col=c("black","red")) # appropriate colors
+```
+
+
 Now we'll make another graph, this time using E. coli data.
 
 ```{r, eval=FALSE}
@@ -89,7 +120,6 @@ b.plot <- barplot(precip$precipitation,
                   names.arg = precip$date,
                   xlab="Date", ylab="Precipitation (in)", 
                   ylim=c(0,5))
-library(TeachingDemos)
 updateusr(x1 = b.plot[1:2], y1 = c(0, 2), x2 = 1:2, y2 = c(0, 2500))
 points(station.1$jday, station.1$e_coli, ylab = "E. coli", pch = 19,
        col = "red", ylim = c(0, 2500))
@@ -98,6 +128,10 @@ axis(4)
 op <- par(mar=c(5, 4, 4, 8) + 0.1)
 mtext("E. coli (MPN/100mL)", side = 4, line=4, cex = par("cex.lab"))
 title(main="Site 1")
+legend(x = 10, y = 5500, # places a legend at the appropriate place 
+       legend = c("Precip","E. coli", "WQS"), # puts text in the legend 
+       lty=c(1, 0, 2), pch = c(NA, 19, NA), # gives the legend appropriate symbols 
+       col=c("black","red", "red")) # appropriate colors
 par(op)
 ```
 
@@ -106,7 +140,6 @@ b.plot <- barplot(precip$precipitation,
                   names.arg = precip$date,
                   xlab="Date", ylab="Precipitation (in)", 
                   ylim=c(0,5))
-library(TeachingDemos)
 updateusr(x1 = b.plot[1:2], y1 = c(0, 2), x2 = 1:2, y2 = c(0, 2500))
 points(station.1$jday, station.1$e_coli, ylab = "E. coli", pch = 19,
        col = "red", ylim = c(0, 2500))
@@ -115,6 +148,10 @@ axis(4)
 op <- par(mar=c(5, 4, 4, 8) + 0.1)
 mtext("E. coli (MPN/100mL)", side = 4, line=4, cex = par("cex.lab"))
 title(main="Site 1")
+legend(x = 10, y = 5500, # places a legend at the appropriate place 
+       legend = c("Precip","E. coli", "WQS"), # puts text in the legend 
+       lty=c(1, 0, 2), pch = c(NA, 19, NA), # gives the legend appropriate symbols 
+       col=c("black","red", "red")) # appropriate colors
 par(op)
 ```
 
