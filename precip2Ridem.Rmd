@@ -41,16 +41,14 @@ We also save the plot as a variable to retain information about its dimensions.
 op <- par(mar=c(5, 4, 4, 6) + 0.1)
 precip <- unique(wide.precip.df[, c("date", "precipitation")])
 b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
-                  xlab="Date", ylab="Precipitation (in)", 
-                  ylim=c(0,5))
+                  xlab="Date", ylab="Precipitation (in)")
 ```
 
 ```{r, echo=TRUE}
 op <- par(mar=c(5, 4, 4, 6) + 0.1)
 precip <- unique(wide.precip.df[, c("date", "precipitation")])
 b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
-                  xlab="Date", ylab="Precipitation (in)", 
-                  ylim=c(0,5))
+                  xlab="Date", ylab="Precipitation (in)")
 par(op)
 ```
 
@@ -67,15 +65,14 @@ in the `b.plot` variable.
 
 ```{r, eval=FALSE}
 b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
-                  xlab="Date", ylab="Precipitation (in)", 
-                  ylim=c(0,5))
+                  xlab="Date", ylab="Precipitation (in)")
 bar.x <- b.plot[station.1$jday]
 
 par(new = TRUE)
 plot(x = bar.x, y = station.1$sat, xlab = "", ylab = "", pch = 16,
-     ylim = c(0, 3*max(station.1$sat, na.rm = TRUE)), axes = FALSE, col = "red")
-axis(4, col = "red", col.axis = "red", 
-     ylim = c(0, 3*max(station.1$sat, na.rm = TRUE)))
+     ylim = c(0.5*min(station.1$sat, na.rm = TRUE), 2*max(station.1$sat, na.rm = TRUE)),
+     axes = FALSE, col = "red")
+axis(4, col = "red", col.axis = "red")
 mtext("% Saturation", side = 4, line=3, cex = par("cex.lab"), col = "red")
 title(main="Site 1")
 par(op)  # reset graphing parameters
@@ -84,15 +81,14 @@ par(op)  # reset graphing parameters
 ```{r, echo=FALSE}
 op <- par(mar=c(5, 4, 4, 6) + 0.1)
 b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
-                  xlab="Date", ylab="Precipitation (in)", 
-                  ylim=c(0,5))
+                  xlab="Date", ylab="Precipitation (in)")
 bar.x <- b.plot[station.1$jday]
 
 par(new = TRUE)
 plot(x = bar.x, y = station.1$sat, xlab = "", ylab = "", pch = 16,
-     ylim = c(0, 3*max(station.1$sat, na.rm = TRUE)), axes = FALSE, col = "red")
-axis(4, col = "red", col.axis = "red", 
-     ylim = c(0, 3*max(station.1$sat, na.rm = TRUE)))
+     ylim = c(0.5*min(station.1$sat, na.rm = TRUE), 2*max(station.1$sat, na.rm = TRUE)),
+     axes = FALSE, col = "red")
+axis(4, col = "red", col.axis = "red")
 mtext("% Saturation", side = 4, line=3, cex = par("cex.lab"), col = "red")
 title(main="Site 1")
 
@@ -112,15 +108,14 @@ par(op)  # reset graphing parameters
 ```{r, echo=FALSE}
 op <- par(mar=c(5, 4, 4, 6) + 0.1)
 b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
-                  xlab="Date", ylab="Precipitation (in)", 
-                  ylim=c(0,5))
+                  xlab="Date", ylab="Precipitation (in)")
 bar.x <- b.plot[station.1$jday]
 
 par(new = TRUE)
 plot(x = bar.x, y = station.1$sat, xlab = "", ylab = "", pch = 16,
-     ylim = c(0, 3*max(station.1$sat, na.rm = TRUE)), axes = FALSE, col = "red")
-axis(4, col = "red", col.axis = "red", 
-     ylim = c(0, 3*max(station.1$sat, na.rm = TRUE)))
+     ylim = c(0.5*min(station.1$sat, na.rm = TRUE), 2*max(station.1$sat, na.rm = TRUE)), 
+     axes = FALSE, col = "red")
+axis(4, col = "red", col.axis = "red")
 mtext("% Saturation", side = 4, line=3, cex = par("cex.lab"), col = "red")
 title(main="Site 1")
 
@@ -137,15 +132,14 @@ Now we'll make another graph, this time using E. coli data.
 ```{r}
 op <- par(mar=c(5, 4, 4, 6) + 0.1)
 b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
-                  xlab="Date", ylab="Precipitation (in)", 
-                  ylim=c(0,5))
+                  xlab="Date", ylab="Precipitation (in)")
 bar.x <- b.plot[station.1$jday]
 
 par(new = TRUE)
 plot(x = bar.x, y = station.1$e_coli, xlab = "", ylab = "", pch = 16,
-     ylim = c(0, 3*max(station.1$e_coli, na.rm = TRUE)), axes = FALSE, col = "red")
-axis(4, col = "red", col.axis = "red", 
-     ylim = c(0, 3*max(station.1$e_coli, na.rm = TRUE)))
+     ylim = c(0.5*min(station.1$e_coli, na.rm = TRUE), 2*max(station.1$e_coli, na.rm = TRUE)), 
+     axes = FALSE, col = "red")
+axis(4, col = "red", col.axis = "red")
 abline(h=125, lty=2, col="red")
 mtext("E. coli (MPN/100mL)", side = 4, line=3, cex = par("cex.lab"), col = "red")
 title(main="Site 1")
