@@ -30,7 +30,8 @@ load("wide_precip_df.rdata")
 
 For the graphs, we will first use the base `barplot()` function to display 
 precipitation levels over time, with the chemistry sampling values overlayed as
-points. Then we will use `ggplot2` to display the same data in alternative ways.
+points. Then we will also use the `lattice` and `ggplot2` packages to 
+display the same data in alternative ways.
 
 ## Base graphics
 
@@ -44,7 +45,7 @@ b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
                   xlab="Date", ylab="Precipitation (in)")
 ```
 
-```{r, echo=TRUE}
+```{r, echo=FALSE}
 op <- par(mar=c(5, 4, 4, 6) + 0.1)
 precip <- unique(wide.precip.df[, c("date", "precipitation")])
 b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
@@ -129,7 +130,7 @@ par(op)  # reset graphing parameters
 
 Now we'll make another graph, this time using E. coli data.
 
-```{r}
+```{r, eval=FALSE}
 op <- par(mar=c(5, 4, 4, 6) + 0.1)
 b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
                   xlab="Date", ylab="Precipitation (in)")
@@ -151,7 +152,97 @@ legend("topright", # places a legend at the appropriate place
 par(op)  # reset graphing parameters
 ```
 
+```{r, echo=FALSE}
+op <- par(mar=c(5, 4, 4, 6) + 0.1)
+b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
+                  xlab="Date", ylab="Precipitation (in)")
+bar.x <- b.plot[station.1$jday]
 
+par(new = TRUE)
+plot(x = bar.x, y = station.1$e_coli, xlab = "", ylab = "", pch = 16,
+     ylim = c(0.5*min(station.1$e_coli, na.rm = TRUE), 2*max(station.1$e_coli, na.rm = TRUE)), 
+     axes = FALSE, col = "red")
+axis(4, col = "red", col.axis = "red")
+abline(h=125, lty=2, col="red")
+mtext("E. coli (MPN/100mL)", side = 4, line=3, cex = par("cex.lab"), col = "red")
+title(main="Site 1")
+
+legend("topright", # places a legend at the appropriate place 
+       legend = c("Precip","E. coli", "WQS"), # puts text in the legend 
+       lty=c(1, 0, 2), pch = c(NA, 19, NA), # gives the legend appropriate symbols 
+       col=c("black","red", "red")) # appropriate colors
+par(op)  # reset graphing parameters
+```
+
+##lattice
+
+`lattice` is another very popular graphics package. For an introduction and examples
+see <a href="http://www.statmethods.net/advgraphs/trellis.html"
+target="_blank">here</a> and <a href="http://www.isid.ac.in/~deepayan/R-tutorials/labs/04_lattice_lab.pdf" target="_blank">here</a>. We'll also use another package called 
+`latticeExtra` which will make it easier to add the second y-axis to our package
+
+Here's a first attempt at a `lattice` graph:
+
+```{r, message=FALSE}
+library(lattice)
+library(latticeExtra)
+
+rain <- xyplot(precipitation ~ date, data = wide.precip.df, type = "h",
+               ylab = "Precipitation (in)")
+sat <- xyplot(sat  ~ date, data = station.1, type = "p", ylab = "% Saturation", 
+              ylim = c(0, 2*max(station.1$sat, na.rm = TRUE)))
+
+doubleYScale(rain, sat, add.ylab2 = TRUE, under = TRUE,
+             text = c( "Precipitation (in)", "% Saturation"), columns = 2, 
+             type = c("l", "p"))
+
+```
+
+We can change the format of the plot to look like our base bar plot by using the 
+`update()` function.
+
+```{r}
+update(trellis.last.object(),
+       par.settings = simpleTheme(col = c("black", "red"), pch = c(NA, 16)))
+```
+
+The advantage of the `lattice` package is that it allows you to easily split up
+the data by conditioning. We'll create some variables that will allow us to 
+split up our data by time periods.
+
+```{r}
+# create a data set for one location in a format for lattice conditioning
+lat.data <- merge(wide.precip.df[, c("date", "precipitation")], 
+                  station.1[, c("date", "sat")], all = TRUE)
+lat.data.2013 <- lat.data[substring(as.character(lat.data$date), 1, 4) == "2013", ]
+lat.data.2013 <- lat.data.2013[!duplicated(lat.data.2013), ]
+
+# create time variables
+time <- as.POSIXlt(lat.data.2013$date)
+year <- time$year + 1900
+month <- as.factor(months(time))
+levels(month) <- month.name[month.name %in% levels(month)]
+mday <- time$mday
+lat.data.2013 <- data.frame(lat.data.2013, year, month, mday)
+```
+
+Now we'll creat two lattice plots, save them as variables, and display them
+together using the `doubleYScale()` function.
+
+```{r}
+rain <- xyplot(precipitation ~ mday | month, data = lat.data.2013, type = "h",
+               ylab = "Precipitation (in)", layout = c(3, 3), as.table = TRUE, 
+               xlab = "2013")
+sat <- xyplot(sat  ~ mday | month, data = lat.data.2013, type = "p", 
+              ylab = "% Saturation", ylim = c(0, 2*max(station.1$sat, na.rm = TRUE)))
+
+doubley <- doubleYScale(rain, sat, add.ylab2 = TRUE, under = TRUE,
+                        text = c( "Precipitation (in)", "% Saturation"), column = 2, 
+                        type = c("l", "p"))
+update(doubley,
+       par.settings = simpleTheme(col = c("black", "red"), pch = c(NA, 16)))
+
+```
 
 ## ggplot2
 
