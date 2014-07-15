@@ -246,6 +246,35 @@ update(doubley,
 
 ## ggplot2
 
+The `ggplot2` package is also useful for displaying relationships between variables
+by conditioning. However, it's not possible to add two y-axes to the same plot 
+using `ggplot2`. So we will create two cumulative variables that will give us
+information about rainfall in days prior to the date of the field samples. One 
+variable will be the sum of rainfall on the same day and one day prior to the
+sample. Another variable will be the sum of the same day, one day and 2 days
+prior to the sample.
+
+```{r}
+precip_2day <- lat.data$precipitation   +
+  c(0, lat.data$precipitation)[1:length(lat.data$precipitation)]
+precip_3day <- lat.data$precipitation   +
+  c(0, lat.data$precipitation)[1:length(lat.data$precipitation)] +
+  c(0, 0, lat.data$precipitation)[1:length(lat.data$precipitation)]
+gg.data <- data.frame(lat.data, precip_2day, precip_3day)
+```
+
+Now we reshape this long data frame into a wide format and plot it.
+
+```{r, message=FALSE, warning=FALSE}
+library(reshape2)
+long.gg.data <- melt(gg.data, id.vars = c("date", "sat"))
+
+library(ggplot2)
+ggplot(long.gg.data, aes(x = date, y = sat, size = value)) + facet_grid(variable ~ .) +
+  geom_point(color = "steelblue") + scale_size_continuous(range = c(3,8)) + ylab("% Saturation") +
+  theme(strip.background = element_rect(fill="lemonchiffon1"))
+```
+
 
 
 ...
