@@ -214,8 +214,9 @@ split up our data by time periods.
 # create a data set for one location in a format for lattice conditioning
 lat.data <- merge(wide.precip.df[, c("date", "precipitation")], 
                   station.1[, c("date", "sat")], all = TRUE)
+lat.data <- lat.data[!duplicated(lat.data), ]
 lat.data.2013 <- lat.data[substring(as.character(lat.data$date), 1, 4) == "2013", ]
-lat.data.2013 <- lat.data.2013[!duplicated(lat.data.2013), ]
+
 
 # create time variables
 time <- as.POSIXlt(lat.data.2013$date)
