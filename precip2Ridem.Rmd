@@ -219,11 +219,9 @@ lat.data.2013 <- lat.data.2013[!duplicated(lat.data.2013), ]
 
 # create time variables
 time <- as.POSIXlt(lat.data.2013$date)
-year <- time$year + 1900
-month <- as.factor(months(time))
-levels(month) <- month.name[month.name %in% levels(month)]
+month <- factor(months(time), levels = month.name[4:12])
 mday <- time$mday
-lat.data.2013 <- data.frame(lat.data.2013, year, month, mday)
+lat.data.2013 <- data.frame(lat.data.2013, month, mday)
 ```
 
 Now we'll creat two lattice plots, save them as variables, and display them
@@ -236,9 +234,9 @@ rain <- xyplot(precipitation ~ mday | month, data = lat.data.2013, type = "h",
 sat <- xyplot(sat  ~ mday | month, data = lat.data.2013, type = "p", 
               ylab = "% Saturation", ylim = c(0, 2*max(station.1$sat, na.rm = TRUE)))
 
-doubley <- doubleYScale(rain, sat, add.ylab2 = TRUE, under = TRUE,
-                        text = c( "Precipitation (in)", "% Saturation"), column = 2, 
-                        type = c("l", "p"))
+doubley <- doubleYScale(rain, sat, add.ylab2 = TRUE, under = TRUE, 
+                        text = c( "Precipitation (in)", "% Saturation"),
+                        column = 2, type = c("l", "p"))
 update(doubley,
        par.settings = simpleTheme(col = c("black", "red"), pch = c(NA, 16)))
 
@@ -271,8 +269,10 @@ long.gg.data <- melt(gg.data, id.vars = c("date", "sat"))
 
 library(ggplot2)
 ggplot(long.gg.data, aes(x = date, y = sat, size = value)) + facet_grid(variable ~ .) +
-  geom_point(color = "steelblue") + scale_size_continuous(range = c(3,8)) + ylab("% Saturation") +
-  theme(strip.background = element_rect(fill="lemonchiffon1"))
+  geom_point(color = "steelblue") + scale_size_continuous(range = c(3,8)) + 
+  ylab("% Saturation") + xlab("Date") + labs(size = "Precip. (in)") +
+  theme(strip.background = element_rect(fill="lemonchiffon1")) 
+  
 ```
 
 
