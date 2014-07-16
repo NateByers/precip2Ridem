@@ -270,7 +270,7 @@ precip_3day <- lat.data$precipitation   +
 gg.data <- data.frame(lat.data, precip_2day, precip_3day)
 ```
 
-Now we reshape this long data frame into a wide format and plot it.
+Now we reshape this wide data frame into a long format and plot it.
 
 ```{r, message=FALSE, warning=FALSE}
 library(reshape2)
