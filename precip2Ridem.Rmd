@@ -38,7 +38,7 @@ load("wide_precip_df.rdata")
 
 For the graphs, we will first use the base `barplot()` function to display 
 precipitation levels over time, with the chemistry sampling values overlayed as
-points. Then we will also use the `lattice` and `ggplot2` packages to 
+points. Then we will use the `lattice` and `ggplot2` packages to 
 display the same data in alternative ways.
 
 ## Base graphics
@@ -47,8 +47,12 @@ For the base graphics plot, we first display the precipitation data as a bar plo
 We also save the plot as a variable to retain information about its dimensions.
 
 ```{r, eval=FALSE}
+# set the margins of the plot, but save the default settings
 op <- par(mar=c(5, 4, 4, 6) + 0.1)
+
+# remove duplicate days
 precip <- unique(wide.precip.df[, c("date", "precipitation")])
+
 b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
                   xlab="Date", ylab="Precipitation (in)")
 ```
@@ -73,18 +77,23 @@ In order to add points to a bar plot, we'll use the x locations that are found
 in the `b.plot` variable. 
 
 ```{r, eval=FALSE}
-b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
-                  xlab="Date", ylab="Precipitation (in)")
-bar.x <- b.plot[station.1$jday]
+# subset the x-axis locations of the bars by using the julian day of the samples
+bar.x <- b.plot[station.1$jday]  
 
+# plot a new figure on top of the current plot
 par(new = TRUE)
 plot(x = bar.x, y = station.1$sat, xlab = "", ylab = "", pch = 16,
      ylim = c(0.5*min(station.1$sat, na.rm = TRUE), 2*max(station.1$sat, na.rm = TRUE)),
      axes = FALSE, col = "red")
+
+# add another y-axis
 axis(4, col = "red", col.axis = "red")
+
+# add a label for the new axis
 mtext("% Saturation", side = 4, line=3, cex = par("cex.lab"), col = "red")
+
+# add a title to the plot
 title(main="Site 1")
-par(op)  # reset graphing parameters
 ```
 
 ```{r, echo=FALSE}
@@ -110,7 +119,9 @@ legend("topright", # places a legend at the appropriate place
        legend = c("Precip","% Sat"), # puts text in the legend 
        lty=c(1, 0), pch = c(NA, 19), # gives the legend appropriate symbols 
        col=c("black","red")) # appropriate colors
-par(op)  # reset graphing parameters
+
+# reset graphing parameters to original default settings
+par(op)  
 
 ```
 
@@ -143,21 +154,20 @@ op <- par(mar=c(5, 4, 4, 6) + 0.1)
 b.plot <- barplot(height = precip$precipitation, names.arg = precip$date,
                   xlab="Date", ylab="Precipitation (in)")
 bar.x <- b.plot[station.1$jday]
-
 par(new = TRUE)
 plot(x = bar.x, y = station.1$e_coli, xlab = "", ylab = "", pch = 16,
      ylim = c(0.5*min(station.1$e_coli, na.rm = TRUE), 2*max(station.1$e_coli, na.rm = TRUE)), 
      axes = FALSE, col = "red")
 axis(4, col = "red", col.axis = "red")
+
+# add a dashed line to reference the water quality standard
 abline(h=125, lty=2, col="red")
+
 mtext("E. coli (MPN/100mL)", side = 4, line=3, cex = par("cex.lab"), col = "red")
 title(main="Site 1")
-
-legend("topright", # places a legend at the appropriate place 
-       legend = c("Precip","E. coli", "WQS"), # puts text in the legend 
-       lty=c(1, 0, 2), pch = c(NA, 19, NA), # gives the legend appropriate symbols 
-       col=c("black","red", "red")) # appropriate colors
-par(op)  # reset graphing parameters
+legend("topright", legend = c("Precip","E. coli", "WQS"),  
+       lty=c(1, 0, 2), pch = c(NA, 19, NA), col=c("black","red", "red")) 
+par(op) 
 ```
 
 ```{r, echo=FALSE}
@@ -195,11 +205,15 @@ Here's a first attempt at a `lattice` graph:
 library(lattice)
 library(latticeExtra)
 
+# a bar plot of the precipitation data
 rain <- xyplot(precipitation ~ date, data = wide.precip.df, type = "h",
                ylab = "Precipitation (in)")
+
+# a scatter plot of the saturation data
 sat <- xyplot(sat  ~ date, data = station.1, type = "p", ylab = "% Saturation", 
               ylim = c(0, 2*max(station.1$sat, na.rm = TRUE)))
 
+# display both on the same graph
 doubleYScale(rain, sat, add.ylab2 = TRUE, under = TRUE,
              text = c( "Precipitation (in)", "% Saturation"), columns = 2, 
              type = c("l", "p"))
@@ -219,17 +233,26 @@ the data by conditioning. We'll create some variables that will allow us to
 split up our data by time periods.
 
 ```{r}
-# create a data set for one location in a format for lattice conditioning
+# create a data set for one station in a format for lattice conditioning
 lat.data <- merge(wide.precip.df[, c("date", "precipitation")], 
                   station.1[, c("date", "sat")], all = TRUE)
+
+# remove duplicates
 lat.data <- lat.data[!duplicated(lat.data), ]
+
+# subset down to 2013 data
 lat.data.2013 <- lat.data[substring(as.character(lat.data$date), 1, 4) == "2013", ]
 
-
-# create time variables
+# create a time variable in the POSIXlt format
 time <- as.POSIXlt(lat.data.2013$date)
+
+# create a month factor variable and arrange the factors in the proper order
 month <- factor(months(time), levels = month.name[4:12])
+
+# create a day-of-the-month variable
 mday <- time$mday
+
+# add the month and mday variables to the data frame
 lat.data.2013 <- data.frame(lat.data.2013, month, mday)
 ```
 
@@ -242,7 +265,6 @@ rain <- xyplot(precipitation ~ mday | month, data = lat.data.2013, type = "h",
                xlab = "2013")
 sat <- xyplot(sat  ~ mday | month, data = lat.data.2013, type = "p", 
               ylab = "% Saturation", ylim = c(0, 2*max(station.1$sat, na.rm = TRUE)))
-
 doubley <- doubleYScale(rain, sat, add.ylab2 = TRUE, under = TRUE, 
                         text = c( "Precipitation (in)", "% Saturation"),
                         column = 2, type = c("l", "p"))
@@ -262,11 +284,16 @@ sample. Another variable will be the sum of the same day, one day and 2 days
 prior to the sample.
 
 ```{r}
+# add precipitation column to a one day lagged copy of itself
 precip_2day <- lat.data$precipitation   +
   c(0, lat.data$precipitation)[1:length(lat.data$precipitation)]
+
+# add precipitation column to a one day and a two day lagged copy of itself
 precip_3day <- lat.data$precipitation   +
   c(0, lat.data$precipitation)[1:length(lat.data$precipitation)] +
   c(0, 0, lat.data$precipitation)[1:length(lat.data$precipitation)]
+
+# add the cumulative precipitation variables to the data frame
 gg.data <- data.frame(lat.data, precip_2day, precip_3day)
 ```
 
@@ -277,9 +304,20 @@ library(reshape2)
 long.gg.data <- melt(gg.data, id.vars = c("date", "sat"))
 
 library(ggplot2)
-ggplot(long.gg.data, aes(x = date, y = sat, size = value)) + facet_grid(variable ~ .) +
+
+# base plot establishing data, x/y variables, and the conditioning variable by size
+ggplot(long.gg.data, aes(x = date, y = sat, size = value)) + 
+  
+  # break the plot up by the number of factors in the 'variable' column
+  facet_grid(variable ~ .) +
+  
+  # add the points, set their color, and adjust the size used for conveying precipitation
   geom_point(color = "steelblue") + scale_size_continuous(range = c(3,8)) + 
+  
+  # add labels
   ylab("% Saturation") + xlab("Date") + labs(size = "Precip. (in)") +
+  
+  # set the color of the title panel for each facet
   theme(strip.background = element_rect(fill="lemonchiffon1")) 
   
 ```
