@@ -20,7 +20,7 @@ graphs.
 
 We will be using the `wide.precip.df` data frame to create the precipitation
 graphs. See <a href="http://rpubs.com/NateByers/precipRidem" target="_blank">part 1</a>
-for instructions on how this data frame was created. Use the `date()` function
+for instructions on how this data frame was created. Use the `data()` function
 to load the data from the `IDEMdata` package.
 
 ```{r, eval=FALSE}
