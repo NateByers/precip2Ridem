@@ -305,7 +305,7 @@ long.gg.data <- melt(gg.data, id.vars = c("date", "sat"))
 
 library(ggplot2)
 
-# base plot establishing data, x/y variables, and the conditioning variable by size
+# assign x variable, y variable, and the conditioning variable
 ggplot(long.gg.data, aes(x = date, y = sat, size = value)) + 
   
   # break the plot up by the number of factors in the 'variable' column
