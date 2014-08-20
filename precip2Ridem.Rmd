@@ -318,7 +318,10 @@ ggplot(long.gg.data, aes(x = date, y = sat, size = value)) +
   
 ```
 
-
+## Part 3
+In <a href="http://rpubs.com/NateByers/precip3Ridem" target="_blank">part 3</a> 
+of this tutorial we learn how to automate the creation of these graphs using 
+functions and loops.
 
 ...
 -------------------------------------------------------------------------------
